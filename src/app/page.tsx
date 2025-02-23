@@ -1,6 +1,6 @@
 "use client";
 
-import { BoneIcon, Calendar, MailIcon } from "@yamada-ui/lucide";
+import { ArrowRightLeft } from "@yamada-ui/lucide";
 import {
   Box,
   Button,
@@ -8,30 +8,44 @@ import {
   Heading,
   HStack,
   IconButton,
-  Input,
-  NativeOption,
-  NativeSelect,
+  Option,
   SegmentedControl,
   SegmentedControlButton,
+  SegmentedControlItem,
+  Select,
+  Text,
+  Textarea,
   VStack,
 } from "@yamada-ui/react";
-import { signIn } from "next-auth/react";
+import { useState } from "react";
 
-import { useUserData } from "@/hooks/useUserData";
+import { useGetPromisesQuery } from "@/generated/graphql";
 import { exampleUser } from "@/lib/mockData";
 
 import { UserCard } from "./_components/Card";
 import { Header } from "./_components/Header";
+import { useLiff } from "@/hooks/useLiff";
 import { Liff } from "./_components/Liff";
-import { useGetPromisesQuery } from "@/generated/graphql";
+
+const importanceItems: SegmentedControlItem[] = [
+  { label: "軽い約束", value: "low" },
+  { label: "少し重要", value: "medium" },
+  { label: "お金が絡む", value: "high" },
+];
 
 export default function Home() {
-  const { user } = useUserData();
+  const { user, loginLiff } = useLiff();
   const { data, loading, error } = useGetPromisesQuery();
   console.log(data);
   console.log(loading);
   console.log(error);
+  const [leftright, setLeftRight] = useState(false);
+
+  const handleLeftRight = () => {
+    setLeftRight(!leftright);
+  };
   console.log(user);
+
   return (
     <Container
       w="full"
@@ -42,49 +56,88 @@ export default function Home() {
     >
       <Box w="100%" maxW="480px" backgroundColor="white" p={4}>
         <Header />
-        <VStack w="full" p={4} gap={4}>
-          <VStack w="full">
-            <Container
-              p={2}
-              bgColor="primary"
-              color="white"
-              rounded="md"
-              alignItems="center"
-              fontWeight={600}
-            >
-              約束の内容は？
-            </Container>
-            <Input variant="outline" placeholder="outline" />
-            <SegmentedControl backgroundColor="teal.200">
-              <SegmentedControlButton value="重要度">
-                重要度
-              </SegmentedControlButton>
-              <SegmentedControlButton value="軽い約束">
-                軽い約束
-              </SegmentedControlButton>
-              <SegmentedControlButton value="少し重要">
-                少し重要
-              </SegmentedControlButton>
-            </SegmentedControl>
-            <NativeSelect placeholder="期限を選択">
-              <NativeOption value="期限なし">期限なし</NativeOption>
-              <NativeOption value="1日">1日</NativeOption>
-              <NativeOption value="1週間">1週間</NativeOption>
-              <NativeOption value="1か月">1か月</NativeOption>
-              <NativeOption value="その他">その他</NativeOption>
-            </NativeSelect>
-            <Liff />
+        {user ? (
+          <VStack w="full" p={4} gap={4}>
+            <VStack w="full">
+              <Container
+                p={2}
+                bgColor="primary"
+                color="white"
+                rounded="md"
+                alignItems="center"
+                fontWeight={600}
+              >
+                約束の内容は？
+              </Container>
+              <HStack>
+                <UserCard user={user} />
+                <Text fontSize="6xl">が</Text>
+                <UserCard user={exampleUser} />
+                <Text fontSize="6xl">に</Text>
+              </HStack>
+
+              <IconButton
+                icon={<ArrowRightLeft />}
+                aria-label="left-right"
+                colorScheme="primary"
+                onClick={handleLeftRight}
+              />
+              <Textarea
+                variant="filled"
+                placeholder="○○を△△する"
+                h="32"
+                focusBorderColor="teal.500"
+              />
+              <HStack
+                w="full"
+                justifyContent="space-between"
+                alignItems="center"
+                p={2}
+              >
+                <Text>重要度</Text>
+                <SegmentedControl
+                  colorScheme="primary"
+                  backgroundColor="gray.50"
+                  defaultValue="low"
+                  size="sm"
+                  items={importanceItems}
+                ></SegmentedControl>
+              </HStack>
+
+              <HStack
+                w="full"
+                justifyContent="space-between"
+                alignItems="center"
+                p={2}
+              >
+                <Text minW="60px">期限</Text>
+                <Select placeholder="期限を選択" focusBorderColor="teal.500">
+                  <Option value="期限なし">期限なし</Option>
+                  <Option value="1日">1日</Option>
+                  <Option value="1週間">1週間</Option>
+                  <Option value="1か月">1か月</Option>
+                  <Option value="その他">その他</Option>
+                </Select>
+              </HStack>
+            </VStack>
+          </VStack>
+        ) : (
+          <VStack>
+            <Heading size="md" p={4}>
+              ようこそ、ゲストさん
+            </Heading>
             <Button
               colorScheme="secondary"
-              onClick={async () => {
-                await signIn("line", { redirectTo: "/" });
+              onClick={() => {
+                loginLiff();
               }}
             >
-              ログイン（本番では消す）
+              ログイン
             </Button>
           </VStack>
-        </VStack>
+        )}
       </Box>
+      <Liff />
     </Container>
   );
 }

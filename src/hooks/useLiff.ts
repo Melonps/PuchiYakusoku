@@ -21,22 +21,22 @@ export const useLiff = () => {
       setUser(validatedData);
       console.log(user);
     } catch (error) {
+      alert(error);
       console.error(error);
     }
   }, [currentLiff, setUser, user]);
 
   useEffect(() => {
     getProfile();
-  }, [currentLiff, getProfile, setUser, user]);
+  }, [currentLiff]);
 
   const loginLiff = () => {
     try {
       if (!liff) return;
       if (liff.isLoggedIn()) return;
       liff.login();
-      liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! }).then(() => {
-        setCurrentLiff(liff);
-      });
+      liff.init({ liffId: process.env.NEXT_PUBLIC_LIFF_ID! });
+      setCurrentLiff(liff);
     } catch (error) {
       alert(error);
       console.error(error, liffError);
@@ -75,5 +75,5 @@ export const useLiff = () => {
     });
   };
 
-  return { currentLiff, loginLiff, user, sendShareText };
+  return { currentLiff, loginLiff, user, sendShareText, setCurrentLiff };
 };
