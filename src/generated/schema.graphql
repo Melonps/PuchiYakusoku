@@ -2,7 +2,7 @@ input CreatePromiseInput {
   content: String!
   dueDate: String!
   level: Level!
-  senderId: String!
+  senderId: ID!
 }
 
 """
@@ -17,6 +17,8 @@ enum Level {
 }
 
 type Mutation {
+  acceptPromise(id: ID!, receiverId: ID!): Promise
+  completePromise(id: ID!): Promise
   createPromise(input: CreatePromiseInput!): Promise
 }
 
@@ -35,8 +37,8 @@ type Promise {
 
 type Query {
   promises: [Promise!]
-  receivedPromises(receiverId: String!): [Promise!]
-  sentPromises(senderId: String!): [Promise!]
+  receivedPromises(receiverId: ID!): [Promise!]
+  sentPromises(senderId: ID!): [Promise!]
 }
 
 type User {

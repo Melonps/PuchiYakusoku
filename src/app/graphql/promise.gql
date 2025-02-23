@@ -35,3 +35,41 @@ mutation CreatePromise($input: CreatePromiseInput!) {
     }
   }
 }
+
+mutation AcceptPromise($id: ID!, $receiverId: ID!) {
+  acceptPromise(id: $id, receiverId: $receiverId) {
+    id
+    content
+    level
+    dueDate
+    sender {
+      id
+      displayName
+      pictureUrl
+    }
+    receiver {
+      id
+      displayName
+      pictureUrl
+    }
+  }
+}
+
+mutation CompletePromise($id: ID!) {
+  completePromise(id: $id) {
+    id
+    content
+    level
+    dueDate
+    sender {
+      id
+      displayName
+      pictureUrl
+    }
+    receiver {
+      id
+      displayName
+      pictureUrl
+    }
+  }
+}

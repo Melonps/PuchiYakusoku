@@ -23,7 +23,7 @@ export type CreatePromiseInput = {
   content: Scalars['String']['input'];
   dueDate: Scalars['String']['input'];
   level: Level;
-  senderId: Scalars['String']['input'];
+  senderId: Scalars['ID']['input'];
 };
 
 export enum Level {
@@ -34,7 +34,20 @@ export enum Level {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  acceptPromise?: Maybe<Promise>;
+  completePromise?: Maybe<Promise>;
   createPromise?: Maybe<Promise>;
+};
+
+
+export type MutationAcceptPromiseArgs = {
+  id: Scalars['ID']['input'];
+  receiverId: Scalars['ID']['input'];
+};
+
+
+export type MutationCompletePromiseArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -65,12 +78,12 @@ export type Query = {
 
 
 export type QueryReceivedPromisesArgs = {
-  receiverId: Scalars['String']['input'];
+  receiverId: Scalars['ID']['input'];
 };
 
 
 export type QuerySentPromisesArgs = {
-  senderId: Scalars['String']['input'];
+  senderId: Scalars['ID']['input'];
 };
 
 export type User = {
@@ -94,6 +107,21 @@ export type CreatePromiseMutationVariables = Exact<{
 
 
 export type CreatePromiseMutation = { __typename?: 'Mutation', createPromise?: { __typename?: 'Promise', id?: string | null, content?: string | null, level?: Level | null, dueDate?: string | null, sender?: { __typename?: 'User', id?: string | null, displayName?: string | null, pictureUrl?: string | null } | null, receiver?: { __typename?: 'User', id?: string | null, displayName?: string | null, pictureUrl?: string | null } | null } | null };
+
+export type AcceptPromiseMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  receiverId: Scalars['ID']['input'];
+}>;
+
+
+export type AcceptPromiseMutation = { __typename?: 'Mutation', acceptPromise?: { __typename?: 'Promise', id?: string | null, content?: string | null, level?: Level | null, dueDate?: string | null, sender?: { __typename?: 'User', id?: string | null, displayName?: string | null, pictureUrl?: string | null } | null, receiver?: { __typename?: 'User', id?: string | null, displayName?: string | null, pictureUrl?: string | null } | null } | null };
+
+export type CompletePromiseMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type CompletePromiseMutation = { __typename?: 'Mutation', completePromise?: { __typename?: 'Promise', id?: string | null, content?: string | null, level?: Level | null, dueDate?: string | null, sender?: { __typename?: 'User', id?: string | null, displayName?: string | null, pictureUrl?: string | null } | null, receiver?: { __typename?: 'User', id?: string | null, displayName?: string | null, pictureUrl?: string | null } | null } | null };
 
 
 export const GetPromisesDocument = gql`
@@ -194,3 +222,96 @@ export function useCreatePromiseMutation(baseOptions?: Apollo.MutationHookOption
 export type CreatePromiseMutationHookResult = ReturnType<typeof useCreatePromiseMutation>;
 export type CreatePromiseMutationResult = Apollo.MutationResult<CreatePromiseMutation>;
 export type CreatePromiseMutationOptions = Apollo.BaseMutationOptions<CreatePromiseMutation, CreatePromiseMutationVariables>;
+export const AcceptPromiseDocument = gql`
+    mutation AcceptPromise($id: ID!, $receiverId: ID!) {
+  acceptPromise(id: $id, receiverId: $receiverId) {
+    id
+    content
+    level
+    dueDate
+    sender {
+      id
+      displayName
+      pictureUrl
+    }
+    receiver {
+      id
+      displayName
+      pictureUrl
+    }
+  }
+}
+    `;
+export type AcceptPromiseMutationFn = Apollo.MutationFunction<AcceptPromiseMutation, AcceptPromiseMutationVariables>;
+
+/**
+ * __useAcceptPromiseMutation__
+ *
+ * To run a mutation, you first call `useAcceptPromiseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAcceptPromiseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [acceptPromiseMutation, { data, loading, error }] = useAcceptPromiseMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      receiverId: // value for 'receiverId'
+ *   },
+ * });
+ */
+export function useAcceptPromiseMutation(baseOptions?: Apollo.MutationHookOptions<AcceptPromiseMutation, AcceptPromiseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AcceptPromiseMutation, AcceptPromiseMutationVariables>(AcceptPromiseDocument, options);
+      }
+export type AcceptPromiseMutationHookResult = ReturnType<typeof useAcceptPromiseMutation>;
+export type AcceptPromiseMutationResult = Apollo.MutationResult<AcceptPromiseMutation>;
+export type AcceptPromiseMutationOptions = Apollo.BaseMutationOptions<AcceptPromiseMutation, AcceptPromiseMutationVariables>;
+export const CompletePromiseDocument = gql`
+    mutation CompletePromise($id: ID!) {
+  completePromise(id: $id) {
+    id
+    content
+    level
+    dueDate
+    sender {
+      id
+      displayName
+      pictureUrl
+    }
+    receiver {
+      id
+      displayName
+      pictureUrl
+    }
+  }
+}
+    `;
+export type CompletePromiseMutationFn = Apollo.MutationFunction<CompletePromiseMutation, CompletePromiseMutationVariables>;
+
+/**
+ * __useCompletePromiseMutation__
+ *
+ * To run a mutation, you first call `useCompletePromiseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCompletePromiseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [completePromiseMutation, { data, loading, error }] = useCompletePromiseMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCompletePromiseMutation(baseOptions?: Apollo.MutationHookOptions<CompletePromiseMutation, CompletePromiseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CompletePromiseMutation, CompletePromiseMutationVariables>(CompletePromiseDocument, options);
+      }
+export type CompletePromiseMutationHookResult = ReturnType<typeof useCompletePromiseMutation>;
+export type CompletePromiseMutationResult = Apollo.MutationResult<CompletePromiseMutation>;
+export type CompletePromiseMutationOptions = Apollo.BaseMutationOptions<CompletePromiseMutation, CompletePromiseMutationVariables>;

@@ -17,7 +17,7 @@ const createPromiseInput = builder.inputType("CreatePromiseInput", {
     content: t.string({ required: true }),
     level: t.field({ type: LevelEnum, required: true }),
     dueDate: t.string({ required: true }),
-    senderId: t.string({ required: true }),
+    senderId: t.id({ required: true }),
   }),
 });
 
@@ -56,7 +56,7 @@ builder.queryType({
     sentPromises: t.field({
       type: [promise],
       args: {
-        senderId: t.arg.string({ required: true }),
+        senderId: t.arg.id({ required: true }),
       },
       resolve: (_, args) =>
         prisma.promise.findMany({ where: { senderId: args.senderId } }),
@@ -64,7 +64,7 @@ builder.queryType({
     receivedPromises: t.field({
       type: [promise],
       args: {
-        receiverId: t.arg.string({ required: true }),
+        receiverId: t.arg.id({ required: true }),
       },
       resolve: (_, args) =>
         prisma.promise.findMany({ where: { receiverId: args.receiverId } }),
@@ -84,6 +84,32 @@ builder.mutationType({
             level: args.input.level,
             dueDate: new Date(args.input.dueDate),
             senderId: args.input.senderId,
+          },
+        }),
+    }),
+    acceptPromise: t.field({
+      type: promise,
+      args: {
+        id: t.arg.id({ required: true }),
+        receiverId: t.arg.id({ required: true }),
+      },
+      resolve: (_, args) =>
+        prisma.promise.update({
+          where: { id: args.id },
+          data: {
+            acceptedAt: new Date(),
+            receiverId: args.receiverId,
+          },
+        }),
+    }),
+    completePromise: t.field({
+      type: promise,
+      args: { id: t.arg.id({ required: true }) },
+      resolve: (_, args) =>
+        prisma.promise.update({
+          where: { id: args.id },
+          data: {
+            completedAt: new Date(),
           },
         }),
     }),
