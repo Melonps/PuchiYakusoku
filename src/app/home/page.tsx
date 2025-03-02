@@ -153,7 +153,7 @@ const EachPromiseCard = ({ promise }: { promise: Promise }) => {
         <VStack gap={2}>
           <Text size="sm" h="4" fontWeight={500} fontSize="sm">
             {promise.receiver ? promise.receiver.displayName : "ともだち"}
-            {promise.direction ? "から" : "に"}
+            {promise.direction ? "が" : "に"}
           </Text>
           <Text size="md" h="4" fontWeight={500}>
             {promise.content}
@@ -166,7 +166,7 @@ const EachPromiseCard = ({ promise }: { promise: Promise }) => {
               </Text>
             </HStack>
           ) : (
-            <Text fontSize="sm" fontWeight={600}>
+            <Text fontSize="sm" fontWeight={500}>
               期限なし
             </Text>
           )}
